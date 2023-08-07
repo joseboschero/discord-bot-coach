@@ -4,7 +4,8 @@ const {
   ButtonBuilder,
   ActionRowBuilder,
   Message,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
+  EmbedBuilder
 } = require("discord.js");
 
 const client = new Client({
@@ -86,11 +87,15 @@ const btnDel = new ActionRowBuilder().addComponents([
 client.on("messageCreate", async (message) => {
   if (message.mentions.has(client.user)) {
     const menu = new ActionRowBuilder().addComponents([
-      new SelectMenuBuilder().setCustomId("menuMsg"),
+      new StringSelectMenuBuilder().setCustomId("menuMsg"),
     ]);
     if (message.content.includes("list")) {
+      const exampleEmbed = new EmbedBuilder()
+    .setColor(0x0099FF)
+    .setTitle(`GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `)
       message.channel.send({
-        content: `GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name}`,
+        content: `Lista`,
+        embeds: [exampleEmbed]
       });
     } else if (message.content.includes("reset")) {
       message.channel.send({
@@ -110,11 +115,31 @@ client.on("interactionCreate", async (interaction) => {
       components: [btnDel, btnCm, btnDef, btnGk],
       ephemeral: true,
     });
+
+    setTimeout(() => {
+      interaction.deleteReply();
+    }, 5000);
   } else if (interaction.customId === "btnUnsign") {
+    const userName = interaction.user.username;
+
+    const index = signeados.findIndex(
+      (item) => item.name === userName
+    );
+
+    if (index !== -1) {
+      signeados[index].name = '';
+    } else {
+      interaction.reply({
+        content: 'No estas signeado!',
+        ephemeral: true,
+      })
+    }
+
     interaction.reply({
-      content: "Clickeaste el boton UNSIGN!",
+      content: 'Te has unsigneado correctamente',
       ephemeral: true,
-    });
+    })
+
   }
 });
 
@@ -133,26 +158,41 @@ client.on("interactionCreate", async (interaction) => {
     const index = signeados.findIndex(
       (item) => item.pos === interaction.customId
     );
-    console.log(index);
-    // Verificar si el índice es válido antes de actualizar el objeto en el array
+
     if (index !== -1) {
-      // Actualizar el objeto en el array con el nombre del usuario
       signeados[index].name = userName;
+
+      const defIds = [btnDef.components[0].data.custom_id, btnDef.components[1].data.custom_id, btnDef.components[2].data.custom_id]
+      const delIds = [btnDel.components[0].data.custom_id, btnDel.components[1].data.custom_id, btnDel.components[2].data.custom_id]
+
+      if (interaction.customId === defIds[0]) {
+        btnDef.components[0].setDisabled(true)
+      } else if (interaction.customId === defIds[1]) {
+        btnDef.components[1].setDisabled(true)
+      } else if (interaction.customId === defIds[2]) {
+        btnDef.components[2].setDisabled(true)
+      } else if (interaction.customId === delIds[0]) {
+        btnDel.components[0].setDisabled(true)
+      } else if (interaction.customId === delIds[1]) {
+        btnDel.components[1].setDisabled(true)
+      } else if (interaction.customId === delIds[2]) {
+        btnDel.components[2].setDisabled(true)
+      } /* else if (interaction.customId === ) */
     }
 
-    // const signeadosContent = signeados
-    //   .map((item) => `${item.pos}: ${item.name}`)
-    //   .join("\n");
+    console.log(btnCm.components[1])
+    console.log(btnGk.components[1])
 
-    interaction.reply({
-      content: `Hola ${userName}, Clickeaste en ${interaction.customId}`,
-      ephemeral: true,
-    });
-
-    console.log(signeados);
+    const exampleEmbed = new EmbedBuilder()
+    .setColor(0x0099FF)
+    .setTitle(`GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `)
+      interaction.reply({
+        content: `Lista`,
+        embeds: [exampleEmbed]
+      });
   }
 });
 
 client.login(
-  "MTEzNzg3MDg1NDYzNDYyMzEwOQ.G-gq-w.zm4Y1SsKJl1nQeAQ3NNq1MVHJrrdTAVjVUEKyg"
+  "MTEzNzg3MDg1NDYzNDYyMzEwOQ.G3f1JU.QClgbII0ukxLg5ZEeyHnd-fXNSlc-fH3rDKVaw"
 );
