@@ -5,8 +5,10 @@ const {
   ActionRowBuilder,
   Message,
   StringSelectMenuBuilder,
-  EmbedBuilder
+  EmbedBuilder,
 } = require("discord.js");
+
+const { token } = require("./token");
 
 const client = new Client({
   intents: [
@@ -19,14 +21,14 @@ const client = new Client({
 });
 
 const signeados = [
-  { pos: "btnGk", name: "" },
-  { pos: "btnLb", name: "" },
-  { pos: "btnCb", name: "" },
-  { pos: "btnRb", name: "" },
-  { pos: "btnCm", name: "" },
-  { pos: "btnLw", name: "" },
-  { pos: "btnCf", name: "" },
-  { pos: "btnRw", name: "" },
+  { pos: "btnGk", name: "❔" },
+  { pos: "btnLb", name: "❔" },
+  { pos: "btnCb", name: "❔" },
+  { pos: "btnRb", name: "❔" },
+  { pos: "btnCm", name: "❔" },
+  { pos: "btnLw", name: "❔" },
+  { pos: "btnCf", name: "❔" },
+  { pos: "btnRw", name: "❔" },
 ];
 
 client.once("ready", () => {
@@ -91,11 +93,13 @@ client.on("messageCreate", async (message) => {
     ]);
     if (message.content.includes("list")) {
       const exampleEmbed = new EmbedBuilder()
-    .setColor(0x0099FF)
-    .setTitle(`GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `)
+        .setColor(0x0099ff)
+        .setTitle(
+          `GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `
+        );
       message.channel.send({
         content: `Lista`,
-        embeds: [exampleEmbed]
+        embeds: [exampleEmbed],
       });
     } else if (message.content.includes("reset")) {
       message.channel.send({
@@ -122,24 +126,21 @@ client.on("interactionCreate", async (interaction) => {
   } else if (interaction.customId === "btnUnsign") {
     const userName = interaction.user.username;
 
-    const index = signeados.findIndex(
-      (item) => item.name === userName
-    );
+    const index = signeados.findIndex((item) => item.name === userName);
 
     if (index !== -1) {
-      signeados[index].name = '';
+      signeados[index].name = "❔";
     } else {
       interaction.reply({
-        content: 'No estas signeado!',
+        content: "No estas signeado!",
         ephemeral: true,
-      })
+      });
     }
 
     interaction.reply({
-      content: 'Te has unsigneado correctamente',
+      content: "Te has unsigneado correctamente",
       ephemeral: true,
-    })
-
+    });
   }
 });
 
@@ -162,37 +163,57 @@ client.on("interactionCreate", async (interaction) => {
     if (index !== -1) {
       signeados[index].name = userName;
 
-      const defIds = [btnDef.components[0].data.custom_id, btnDef.components[1].data.custom_id, btnDef.components[2].data.custom_id]
-      const delIds = [btnDel.components[0].data.custom_id, btnDel.components[1].data.custom_id, btnDel.components[2].data.custom_id]
+      const defIds = [
+        btnDef.components[0].data.custom_id,
+        btnDef.components[1].data.custom_id,
+        btnDef.components[2].data.custom_id,
+      ];
+      const delIds = [
+        btnDel.components[0].data.custom_id,
+        btnDel.components[1].data.custom_id,
+        btnDel.components[2].data.custom_id,
+      ];
 
       if (interaction.customId === defIds[0]) {
-        btnDef.components[0].setDisabled(true)
+        btnDef.components[0].setDisabled(true);
+        btnDef.components[0].setStyle("Danger");
       } else if (interaction.customId === defIds[1]) {
-        btnDef.components[1].setDisabled(true)
+        btnDef.components[1].setDisabled(true);
+        btnDef.components[1].setStyle("Danger");
       } else if (interaction.customId === defIds[2]) {
-        btnDef.components[2].setDisabled(true)
+        btnDef.components[2].setDisabled(true);
+        btnDef.components[2].setStyle("Danger");
       } else if (interaction.customId === delIds[0]) {
-        btnDel.components[0].setDisabled(true)
+        btnDel.components[0].setDisabled(true);
+        btnDel.components[0].setStyle("Danger");
       } else if (interaction.customId === delIds[1]) {
-        btnDel.components[1].setDisabled(true)
+        btnDel.components[1].setDisabled(true);
+        btnDel.components[1].setStyle("Danger");
       } else if (interaction.customId === delIds[2]) {
-        btnDel.components[2].setDisabled(true)
-      } /* else if (interaction.customId === ) */
+        btnDel.components[2].setDisabled(true);
+        btnDel.components[2].setStyle("Danger");
+      } else if (interaction.customId === btnGk.components[1].data.custom_id) {
+        btnGk.components[1].setDisabled(true);
+        btnGk.components[1].setStyle("Danger");
+      } else if (interaction.customId === btnCm.components[1].data.custom_id) {
+        btnCm.components[1].setDisabled(true);
+        btnCm.components[1].setStyle("Danger");
+      }
     }
 
-    console.log(btnCm.components[1])
-    console.log(btnGk.components[1])
+    console.log(btnCm.components[1]);
+    console.log(btnGk.components[1]);
 
     const exampleEmbed = new EmbedBuilder()
-    .setColor(0x0099FF)
-    .setTitle(`GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `)
-      interaction.reply({
-        content: `Lista`,
-        embeds: [exampleEmbed]
-      });
+      .setColor(0x0099ff)
+      .setTitle(
+        `GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `
+      );
+    interaction.reply({
+      content: `Lista`,
+      embeds: [exampleEmbed],
+    });
   }
 });
 
-client.login(
-  "MTEzNzg3MDg1NDYzNDYyMzEwOQ.G3f1JU.QClgbII0ukxLg5ZEeyHnd-fXNSlc-fH3rDKVaw"
-);
+client.login(token);
