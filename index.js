@@ -88,10 +88,16 @@ const btnDel = new ActionRowBuilder().addComponents([
 
 client.on("messageCreate", async (message) => {
   if (message.mentions.has(client.user)) {
+    if (message.author.username !== "Coach de la salada") {
+      console.log(message.author.username + " tageo para signear");
+    }
     const menu = new ActionRowBuilder().addComponents([
       new StringSelectMenuBuilder().setCustomId("menuMsg"),
     ]);
     if (message.content.includes("list")) {
+      if (message.author.username !== "Coach de la salada") {
+        console.log(message.author.username + " tiro list");
+      }
       const exampleEmbed = new EmbedBuilder()
         .setColor(0x0099ff)
         .setTitle(
@@ -102,45 +108,120 @@ client.on("messageCreate", async (message) => {
         embeds: [exampleEmbed],
       });
     } else if (message.content.includes("reset")) {
+      if (message.author.username !== "Coach de la salada") {
+        console.log(message.author.username + " tiro reset");
+      }
+      signeados.forEach((item) => (item.name = "❔"));
+      btnDel.components[1].setDisabled(false);
+      btnDel.components[1].setStyle("Primary");
+      btnDel.components[0].setDisabled(false);
+      btnDel.components[0].setStyle("Primary");
+      btnDel.components[2].setDisabled(false);
+      btnDel.components[2].setStyle("Primary");
+      btnCm.components[1].setDisabled(false);
+      btnCm.components[1].setStyle("Primary");
+      btnDef.components[0].setDisabled(false);
+      btnDef.components[0].setStyle("Primary");
+      btnDef.components[1].setDisabled(false);
+      btnDef.components[1].setStyle("Primary");
+      btnDef.components[2].setDisabled(false);
+      btnDef.components[2].setStyle("Primary");
+      btnGk.components[1].setDisabled(false);
+      btnGk.components[1].setStyle("Primary");
+      const exampleEmbed = new EmbedBuilder()
+        .setColor(0x0099ff)
+        .setTitle(
+          `GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `
+        );
       message.channel.send({
-        content: "Lista reseteada",
+        content: `Lista`,
+        embeds: [exampleEmbed],
       });
-      signeados.forEach((item) => (item.name = ""));
     } else {
-      message.channel.send({ components: [btnSigns], ephemeral: true });
+      const sentMessage = await message.channel.send({
+        components: [btnSigns],
+        ephemeral: true,
+      });
     }
   }
 });
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.customId === "btnSign") {
-    interaction.reply({
-      content: "Selecciona la posicion",
-      components: [btnDel, btnCm, btnDef, btnGk],
-      ephemeral: true,
-    });
-
-    setTimeout(() => {
-      interaction.deleteReply();
-    }, 5000);
+    const userName = interaction.user.username;
+    const index = signeados.findIndex((item) => item.name === userName);
+    if (index !== -1) {
+      interaction.reply({
+        content: "Ya estas signeado flaco, no rompas las bolas",
+        ephemeral: true,
+      });
+    } else {
+      interaction.reply({
+        content: "Selecciona la posicion",
+        components: [btnDel, btnCm, btnDef, btnGk],
+        ephemeral: true,
+      });
+      setTimeout(() => {
+        interaction.deleteReply();
+      }, 5000);
+    }
   } else if (interaction.customId === "btnUnsign") {
     const userName = interaction.user.username;
-
+    console.log(userName + " se quiso unsignear");
     const index = signeados.findIndex((item) => item.name === userName);
 
     if (index !== -1) {
+      const position = signeados.filter((pos) => pos.name === userName);
+      switch (position[0].pos) {
+        case "btnCf":
+          btnDel.components[1].setDisabled(false);
+          btnDel.components[1].setStyle("Primary");
+          break;
+        case "btnLw":
+          btnDel.components[0].setDisabled(false);
+          btnDel.components[0].setStyle("Primary");
+          break;
+        case "btnRw":
+          btnDel.components[2].setDisabled(false);
+          btnDel.components[2].setStyle("Primary");
+          break;
+        case "btnCm":
+          btnCm.components[1].setDisabled(false);
+          btnCm.components[1].setStyle("Primary");
+          break;
+        case "btnLb":
+          btnDef.components[0].setDisabled(false);
+          btnDef.components[0].setStyle("Primary");
+          break;
+        case "btnCb":
+          btnDef.components[1].setDisabled(false);
+          btnDef.components[1].setStyle("Primary");
+          break;
+        case "btnRb":
+          btnDef.components[2].setDisabled(false);
+          btnDef.components[2].setStyle("Primary");
+          break;
+        case "btnGk":
+          btnGk.components[1].setDisabled(false);
+          btnGk.components[1].setStyle("Primary");
+          break;
+      }
       signeados[index].name = "❔";
+      const exampleEmbed = new EmbedBuilder()
+        .setColor(0x0099ff)
+        .setTitle(
+          `GK: ${signeados[0].name} , LB: ${signeados[1].name} , CB: ${signeados[2].name} , RB: ${signeados[3].name} , CM: ${signeados[4].name} , LW: ${signeados[5].name} , CF: ${signeados[6].name} , RW: ${signeados[7].name} `
+        );
+      interaction.reply({
+        content: "Lista",
+        embeds: [exampleEmbed],
+      });
     } else {
       interaction.reply({
         content: "No estas signeado!",
         ephemeral: true,
       });
     }
-
-    interaction.reply({
-      content: "Te has unsigneado correctamente",
-      ephemeral: true,
-    });
   }
 });
 
@@ -156,6 +237,8 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId === "btnRb" ||
     interaction.customId === "btnGk"
   ) {
+    const position = interaction.customId;
+    console.log(interaction.user.username + " signeo de " + position.slice(3));
     const index = signeados.findIndex(
       (item) => item.pos === interaction.customId
     );
@@ -200,9 +283,6 @@ client.on("interactionCreate", async (interaction) => {
         btnCm.components[1].setStyle("Danger");
       }
     }
-
-    console.log(btnCm.components[1]);
-    console.log(btnGk.components[1]);
 
     const exampleEmbed = new EmbedBuilder()
       .setColor(0x0099ff)
