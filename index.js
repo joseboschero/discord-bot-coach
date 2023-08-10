@@ -61,9 +61,9 @@ const btnGk = new ActionRowBuilder().addComponents([
 ]);
 
 const btnDef = new ActionRowBuilder().addComponents([
-  new ButtonBuilder().setLabel("RB").setStyle("Primary").setCustomId("btnRb"),
-  new ButtonBuilder().setLabel("CB").setStyle("Primary").setCustomId("btnCb"),
   new ButtonBuilder().setLabel("LB").setStyle("Primary").setCustomId("btnLb"),
+  new ButtonBuilder().setLabel("CB").setStyle("Primary").setCustomId("btnCb"),
+  new ButtonBuilder().setLabel("RB").setStyle("Primary").setCustomId("btnRb"),
 ]);
 
 const btnCm = new ActionRowBuilder().addComponents([
